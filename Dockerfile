@@ -49,8 +49,8 @@ RUN echo '#!/bin/bash' > /app/start.sh && \
     echo '  -e "s/zmmznnzzm/${NEZ_KEY}/g" \' >> /app/start.sh && \
     echo '  -e "s#\${URL}#${URL}#g" \' >> /app/start.sh && \
     echo '  /app/nginx.conf' >> /app/start.sh && \
-    echo 'sudo mv -f /app/nginx.conf /etc/nginx/nginx.conf' >> /app/start.sh && \
-    echo 'sudo /usr/bin/supervisord -c /etc/supervisord.conf' >> /app/start.sh && \
+    echo 'mv -f /app/nginx.conf /etc/nginx/nginx.conf' >> /app/start.sh && \
+    echo '/usr/bin/supervisord -c /etc/supervisord.conf' >> /app/start.sh && \
     chmod +x /app/start.sh && \
     chown appuser:appuser /app/start.sh
 
