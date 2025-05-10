@@ -31,7 +31,7 @@ ENV NX_PORT="7860" \
 # ��� nx-app û���κ��ⲿ�������˴��� apt-get install ���ܲ���Ҫ�κΰ���
 RUN useradd -m -u 1000 appuser && \
     apt-get update && \
-    apt-get install -y ca-certificates procps
+    apt-get install -y ca-certificates procps && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
