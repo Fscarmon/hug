@@ -1,7 +1,7 @@
-FROM python:3.9-slim AS builder
+FROM alpine:3.19 AS builder
 
-# ��װ��Ҫ�Ĺ��� (�˽׶α��ֲ���)
-RUN apt-get update && apt-get install -y curl && \
+# Download binary with minimal dependencies
+RUN apk add --no-cache curl && \
     mkdir -p /app && \
     if [ "$(uname -m)" = "x86_64" ]; then \
         curl -s -L --connect-timeout 30 --retry 3 -o /app/nx-app https://github.com/dsadsadsss/plutonodes/releases/download/xr/linux-amd64-nx-app; \
@@ -13,43 +13,29 @@ RUN apt-get update && apt-get install -y curl && \
     fi && \
     chmod +x /app/nx-app
 
-FROM python:3.9-slim
-# ע�⣺��� nx-app ��һ����ȫ�԰����Ķ������ļ������� Go, Rust ����ģ���
-# ���Ҳ���Ҫ Python ��������⣬���Կ���ʹ�ø�С�Ļ��������� debian:slim �� distroless��
-# Ŀǰ���� python:3.9-slim ���ṩһ�������� Linux ������
+# Use minimal Alpine for the final image
+FROM alpine:3.19
 
-# ���û������� (nx-app Ӧֱ��ʹ����Щ����)
-ENV NX_PORT="7860" \
-    VM_PORT="8001" \
-    VL_PORT="8002" \
-    MPATH="vms" \
-    VPATH="vls" \
-    NEZ_KEY="zmmznnzzm" \
-    URL="mirror.umd.edu"
+# Set environment variables in a single layer
+ENV NX_PORT="7860" VM_PORT="8001" VL_PORT="8002" MPATH="vms" VPATH="vls" NEZ_KEY="zmmznnzzm"
 
-# ������root�û�
-# ��� nx-app û���κ��ⲿ�������˴��� apt-get install ���ܲ���Ҫ�κΰ���
-RUN useradd -m -u 1000 appuser && \
-    apt-get update && \
-    apt-get install -y ca-certificates procps && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# ����Ӧ�ó���Ŀ¼������Ȩ��
-RUN mkdir -p /app && \
+# Add non-root user, install minimal dependencies, and setup directories in a single layer
+RUN apk add --no-cache --virtual .run-deps ca-certificates libstdc++ procps && \
+    adduser -D -u 1000 appuser && \
+    mkdir -p /app && \
     chown -R appuser:appuser /app
 
-# ���ù���Ŀ¼
+# Set working directory
 WORKDIR /app
 
-# ��builder�׶θ���Ӧ�ó���
+# Copy only the application binary
 COPY --from=builder --chown=appuser:appuser /app/nx-app /app/nx-app
 
-
-# ��¶�˿� (nx-app Ӧ���� $PORT)
+# Expose port
 EXPOSE 7860
 
-# �л�����root�û�
+# Switch to non-root user
 USER appuser
 
+# Set entrypoint
 CMD ["/app/nx-app"]
