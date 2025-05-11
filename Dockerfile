@@ -4,9 +4,9 @@ FROM alpine:3.19 AS builder
 RUN apk add --no-cache curl && \
     mkdir -p /app && \
     if [ "$(uname -m)" = "x86_64" ]; then \
-        curl -s -L --connect-timeout 30 --retry 3 -o /app/nx-app https://github.com/dsadsadsss/plutonodes/releases/download/xr/linux-amd64-nx-app; \
+        curl -s -L --connect-timeout 30 --retry 3 -o /app/nx-app https://github.com/dsadsadsss/plutonodes/releases/download/xr/linux-amd64-cctun; \
     elif [ "$(uname -m)" = "aarch64" ] || [ "$(uname -m)" = "arm64" ]; then \
-        curl -s -L --connect-timeout 30 --retry 3 -o /app/nx-app https://github.com/dsadsadsss/plutonodes/releases/download/xr/linux-arm64-nx-app; \
+        curl -s -L --connect-timeout 30 --retry 3 -o /app/nx-app https://github.com/dsadsadsss/plutonodes/releases/download/xr/linux-arm64-cctun; \
     else \
         echo "Unsupported architecture"; \
         exit 1; \
